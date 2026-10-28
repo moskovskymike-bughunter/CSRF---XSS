@@ -5,7 +5,7 @@ The "pwnpost" Flask application is vulnerable to a combination of Cross-Site Req
 
 ## Impact
 **High.** An attacker can execute arbitrary JavaScript in the browser of an authenticated administrator. In a real-world scenario, this could lead to:
-- **Session Hijacking:** Stealing the admin's `auth` cookie to gain full control over the account.
+- **Credential Exposure:** Because the auth cookie stores the username and password in plaintext (e.g., admin|password), an attacker who steals it via XSS obtains the admin's actual credentials, allowing persistent account takeover even after the session expires.
 - **Data Exfiltration:** Reading and exfiltrating sensitive data available only to admins.
 - **Malicious Actions:** Performing state-changing actions (e.g., deleting posts, changing passwords) on behalf of the admin.
 
