@@ -14,6 +14,7 @@ The "pwnpost" Flask application has a reflected XSS vulnerability in the `/ephem
     var payload = '<scr' + 'ipt>alert("PWNED")</scr' + 'ipt>';
     window.location.href = 'http://challenge.localhost/ephemeral?msg=' + encodeURIComponent(payload);
 </script>
+```
 
 ## Root Cause
 
@@ -22,3 +23,9 @@ The vulnerability is a combination of two flaws:
 1. **Reflected XSS in `/ephemeral`:** The endpoint takes the `msg` parameter from the URL and injects it directly into the HTML response without any sanitization or escaping.
    ```python
    The message: {flask.request.args.get("msg", "(none)")}
+   ```
+2. **Lack of CSRF Protection: The application does not validate the Origin or Referer headers, nor does it use CSRF tokens. This allows an attacker to force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
+
+Because the admin bot is already authenticated and carries the auth cookie, any JavaScript executed on the page will run in the context of the admin session.
+
+
