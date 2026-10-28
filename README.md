@@ -14,3 +14,11 @@ The "pwnpost" Flask application has a reflected XSS vulnerability in the `/ephem
     var payload = '<scr' + 'ipt>alert("PWNED")</scr' + 'ipt>';
     window.location.href = 'http://challenge.localhost/ephemeral?msg=' + encodeURIComponent(payload);
 </script>
+
+## Root Cause
+
+The vulnerability is a combination of two flaws:
+
+1. **Reflected XSS in `/ephemeral`:** The endpoint takes the `msg` parameter from the URL and injects it directly into the HTML response without any sanitization or escaping.
+   ```python
+   The message: {flask.request.args.get("msg", "(none)")}
