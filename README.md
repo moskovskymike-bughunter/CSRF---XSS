@@ -24,7 +24,7 @@ The vulnerability is a combination of two flaws:
    ```python
    The message: {flask.request.args.get("msg", "(none)")}
    ```
-2. **Lack of CSRF Protection: The application does not validate the Origin or Referer headers, nor does it use CSRF tokens. This allows an attacker to force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
+2. **Lack of CSRF Protection:**: The application does not validate the Origin or Referer headers, nor does it use CSRF tokens. This allows an attacker to force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
 
 Because the admin bot is already authenticated and carries the auth cookie, any JavaScript executed on the page will run in the context of the admin session.
 
