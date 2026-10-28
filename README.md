@@ -1,5 +1,13 @@
+# CSRF to XSS in pwn.college "pwnpost"
+
 ## Description
-The "pwnpost" Flask application has a reflected XSS vulnerability in the `/ephemeral` endpoint. Because the application lacks CSRF protection, an attacker can force an authenticated admin bot to visit a malicious page, which then redirects the bot to the vulnerable endpoint and executes arbitrary JavaScript.
+The "pwnpost" Flask application is vulnerable to a combination of Cross-Site Request Forgery (CSRF) and Reflected Cross-Site Scripting (XSS). An attacker can force an authenticated admin bot to visit a malicious page, which then redirects the bot to the vulnerable `/ephemeral` endpoint, executing arbitrary JavaScript in the context of the admin session.
+
+## Impact
+**High.** An attacker can execute arbitrary JavaScript in the browser of an authenticated administrator. In a real-world scenario, this could lead to:
+- **Session Hijacking:** Stealing the admin's `auth` cookie to gain full control over the account.
+- **Data Exfiltration:** Reading and exfiltrating sensitive data available only to admins.
+- **Malicious Actions:** Performing state-changing actions (e.g., deleting posts, changing passwords) on behalf of the admin.
 
 ## Reproduction Steps
 1. Start the vulnerable server: `./challenge/server &`
@@ -14,18 +22,3 @@ The "pwnpost" Flask application has a reflected XSS vulnerability in the `/ephem
     var payload = '<scr' + 'ipt>alert("PWNED")</scr' + 'ipt>';
     window.location.href = 'http://challenge.localhost/ephemeral?msg=' + encodeURIComponent(payload);
 </script>
-```
-
-## Root Cause
-
-The vulnerability is a combination of two flaws:
-
-1. **Reflected XSS in `/ephemeral`:** The endpoint takes the `msg` parameter from the URL and injects it directly into the HTML response without any sanitization or escaping.
-   ```python
-   The message: {flask.request.args.get("msg", "(none)")}
-   ```
-2. **Lack of CSRF Protection**: The application does not validate the Origin or Referer headers, nor does it use CSRF tokens. This allows an attacker to force an authenticated user (the admin bot) to make requests to the vulnerable endpoint.
-
-Because the admin bot is already authenticated and carries the auth cookie, any JavaScript executed on the page will run in the context of the admin session.
-
-
